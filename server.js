@@ -64,6 +64,7 @@ async function makePgStore() {
       guests INT,
       party_type TEXT,
       drinks TEXT,
+      address TEXT,
       status TEXT NOT NULL DEFAULT 'pending',
       created_at BIGINT
     );
@@ -72,10 +73,11 @@ async function makePgStore() {
       note TEXT
     );
   `);
+  await pool.query('ALTER TABLE requests ADD COLUMN IF NOT EXISTS address TEXT');
   const rowToReq = (r) => ({
     id: r.id, name: r.name, phone: r.phone, date: r.date, time: r.time,
     hours: r.hours, guests: r.guests, partyType: r.party_type,
-    drinks: r.drinks, status: r.status, createdAt: Number(r.created_at),
+    drinks: r.drinks, address: r.address || '', status: r.status, createdAt: Number(r.created_at),
   });
   return {
     mode: 'postgres',
@@ -85,9 +87,9 @@ async function makePgStore() {
     },
     async createRequest(req) {
       await pool.query(
-        `INSERT INTO requests (id, name, phone, date, time, hours, guests, party_type, drinks, status, created_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-        [req.id, req.name, req.phone, req.date, req.time, req.hours, req.guests, req.partyType, req.drinks, req.status, req.createdAt],
+        `INSERT INTO requests (id, name, phone, date, time, hours, guests, party_type, drinks, address, status, created_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        [req.id, req.name, req.phone, req.date, req.time, req.hours, req.guests, req.partyType, req.drinks, req.address, req.status, req.createdAt],
       );
       return req;
     },
@@ -181,6 +183,7 @@ async function init() {
         hours, guests,
         partyType: clean(b.partyType, 40) || 'Other',
         drinks: clean(b.drinks, 500),
+        address: clean(b.address, 200),
         status: 'pending',
         createdAt: Date.now(),
       };
