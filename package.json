@@ -1,0 +1,15 @@
+{
+  "name": "angela-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scheduling backend for Angela's Mobile Bartending — booking requests, confirmations, block-outs.",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.12.0"
+  }
+}
